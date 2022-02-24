@@ -9,12 +9,13 @@ set(CMAKE_CXX_STANDARD 20)
 # when compiling with PCH enabled
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-
 # Note: by default ENABLE_DEVELOPER_MODE is True
 # This means that all analysis (sanitizers, static analysis)
 # is enabled and all warnings are treated as errors
 # if you want to switch this behavior, change TRUE to FALSE
-set(ENABLE_DEVELOPER_MODE TRUE CACHE BOOL "Enable 'developer mode'")
+set(ENABLE_DEVELOPER_MODE
+    TRUE
+    CACHE BOOL "Enable 'developer mode'")
 
 # Change this to false if you want to disable warnings_as_errors in developer mode
 set(OPT_WARNINGS_AS_ERRORS_DEVELOPER_DEFAULT TRUE)
@@ -94,7 +95,6 @@ target_compile_features(project_options INTERFACE cxx_std_${CMAKE_CXX_STANDARD})
 add_subdirectory(configured_files)
 target_include_directories(project_options INTERFACE "${CMAKE_BINARY_DIR}")
 
-
 # Adding the src:
 add_subdirectory(src)
 
@@ -116,6 +116,7 @@ endif()
 # If MSVC is being used, and ASAN is enabled, we need to set the debugger environment
 # so that it behaves well with MSVC's debugger, and we can run the target from visual studio
 if(MSVC)
+  set(CONAN_DISABLE_CHECK_COMPILER TRUE)
   get_all_targets(all_targets)
   set_target_properties(${all_targets} PROPERTIES VS_DEBUGGER_ENVIRONMENT "PATH=$(VC_ExecutablePath_x64);%PATH%")
 endif()
