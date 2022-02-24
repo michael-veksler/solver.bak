@@ -77,15 +77,13 @@ include(${_project_options_SOURCE_DIR}/src/DynamicProjectOptions.cmake)
 # Initialize project_options variable related to this project
 # This overwrites `project_options` and sets `project_warnings`
 # uncomment the options to enable them:
-set(CONAN_OPTIONS -DCONAN_DISABLE_CHECK_COMPILER=TRUE)
-set(CONAN_DISABLE_CHECK_COMPILER TRUE)
 dynamic_project_options(
   # Note: PCH is disabled by default in developer mode because these headers become
   # globally included and they can mask other errors
   PCH_HEADERS
   <vector>
   <string> # This is a list of headers to pre-compile, here are some common ones
-  CONAN_OPTIONS  # Extra options to pass to conan
+  # CONAN_OPTIONS  # Extra options to pass to conan
   # MSVC_WARNINGS  # Override the defaults for the MSVC warnings
   # CLANG_WARNINGS # Override the defaults for the CLANG warnings
   # GCC_WARNINGS   # Override the defaults for the GCC warnings
