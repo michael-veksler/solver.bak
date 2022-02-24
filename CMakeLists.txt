@@ -77,13 +77,15 @@ include(${_project_options_SOURCE_DIR}/src/DynamicProjectOptions.cmake)
 # Initialize project_options variable related to this project
 # This overwrites `project_options` and sets `project_warnings`
 # uncomment the options to enable them:
+set(CONAN_OPTIONS -DCONAN_DISABLE_CHECK_COMPILER=TRUE)
+set(CONAN_DISABLE_CHECK_COMPILER TRUE)
 dynamic_project_options(
   # Note: PCH is disabled by default in developer mode because these headers become
   # globally included and they can mask other errors
   PCH_HEADERS
   <vector>
   <string> # This is a list of headers to pre-compile, here are some common ones
-  # CONAN_OPTIONS  # Extra options to pass to conan
+  CONAN_OPTIONS  # Extra options to pass to conan
   # MSVC_WARNINGS  # Override the defaults for the MSVC warnings
   # CLANG_WARNINGS # Override the defaults for the CLANG warnings
   # GCC_WARNINGS   # Override the defaults for the GCC warnings
@@ -116,7 +118,6 @@ endif()
 # If MSVC is being used, and ASAN is enabled, we need to set the debugger environment
 # so that it behaves well with MSVC's debugger, and we can run the target from visual studio
 if(MSVC)
-  set(CONAN_DISABLE_CHECK_COMPILER TRUE)
   get_all_targets(all_targets)
   set_target_properties(${all_targets} PROPERTIES VS_DEBUGGER_ENVIRONMENT "PATH=$(VC_ExecutablePath_x64);%PATH%")
 endif()
