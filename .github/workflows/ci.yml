@@ -53,22 +53,22 @@ jobs:
         include:
           - os: windows-2022
             compiler: msvc
-            generator: "Visual Studio 19 2022"
+            generator: "Visual Studio 17 2022"
             build_type: Debug
             developer_mode: On
           - os: windows-2022
             compiler: msvc
-            generator: "Visual Studio 19 2022"
+            generator: "Visual Studio 17 2022"
             build_type: Release
             developer_mode: On
           - os: windows-2022
             compiler: msvc
-            generator: "Visual Studio 19 2022"
+            generator: "Visual Studio 17 2022"
             build_type: Debug
             developer_mode: OFF
           - os: windows-2022
             compiler: msvc
-            generator: "Visual Studio 19 2022"
+            generator: "Visual Studio 17 2022"
             build_type: Release
             developer_mode: OFF
 
