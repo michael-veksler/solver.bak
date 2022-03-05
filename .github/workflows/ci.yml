@@ -2,9 +2,11 @@ name: ci
 on:
   pull_request:
   push:
+    tags:
+    release:
+      types: [published]
     branches:
       - main
-      - master
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
