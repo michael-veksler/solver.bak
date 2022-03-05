@@ -15,6 +15,12 @@ Conan and CMake use the environment variables CC and CXX to decide which compile
 
 CMake will detect which compiler was used to build each of the Conan targets. If you build all of your Conan targets with one compiler, and then build your CMake targets with a different compiler, the project may fail to build.
 
+If the compiler is installed in a non-standard location, such as a home-directory, also set the LD_LIBRARY_PATH environment variable to point to the location of the C++ shared library. Otherwise you may get an error such as
+```
+build/test/relaxed_constexpr_tests: /lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by build/test/relaxed_constexpr_tests)
+
+```
+
 <details>
 <summary>Commands for setting the compilers </summary>
 
@@ -108,23 +114,6 @@ With the Cmake Curses Dialog Command Line tool:
 Once `ccmake` has finished setting up, press 'c' to configure the project,
 press 'g' to generate, and 'q' to quit.
 
-#### (2.c) Configuring via cmake-gui:
-
-To use the GUI of the cmake:
-
-2.c.1) Open cmake-gui from the project directory:
-```
-cmake-gui .
-```
-2.c.2) Set the build directory:
-
-![build_dir](https://user-images.githubusercontent.com/16418197/82524586-fa48e380-9af4-11ea-8514-4e18a063d8eb.jpg)
-
-2.c.3) Configure the generator:
-
-In cmake-gui, from the upper menu select `Tools/Configure`.
-
-**Warning**: if you have set `CC` and `CXX` always choose the `use default native compilers` option. This picks `CC` and `CXX`. Don't change the compiler at this stage!
 
 <details>
 <summary>Windows - MinGW Makefiles</summary>
@@ -189,5 +178,3 @@ cd ./build
 ctest -C Debug
 cd ../
 ```
-
-

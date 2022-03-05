@@ -29,78 +29,9 @@ RefreshEnv.cmd # reload the environment
 ```
 
 ### Necessary Dependencies
-1. A C++ compiler that supports C++17.
+1. A C++ compiler that supports C++20.
 See [cppreference.com](https://en.cppreference.com/w/cpp/compiler_support)
 to see which features are supported by each compiler.
-The following compilers should work:
-
-  * [gcc 7+](https://gcc.gnu.org/)
-	<details>
-	<summary>Install command</summary>
-
-	- Debian/Ubuntu:
-
-			sudo apt install build-essential
-
-	- Windows:
-
-			choco install mingw -y
-
-	- MacOS:
-
-			brew install gcc
-	</details>
-
-  * [clang 6+](https://clang.llvm.org/)
-	<details>
-	<summary>Install command</summary>
-
-	- Debian/Ubuntu:
-
-			bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
-
-	- Windows:
-
-		Visual Studio 2019 ships with LLVM (see the Visual Studio section). However, to install LLVM separately:
-
-			choco install llvm -y
-
-		llvm-utils for using external LLVM with Visual Studio generator:
-
-			git clone https://github.com/zufuliu/llvm-utils.git
-			cd llvm-utils/VS2017
-			.\install.bat
-
-	- MacOS:
-
-			brew install llvm
-	</details>
-
-  * [Visual Studio 2019 or higher](https://visualstudio.microsoft.com/)
-	<details>
-	<summary>Install command + Environment setup</summary>
-
-	On Windows, you need to install Visual Studio 2019 because of the SDK and libraries that ship with it.
-
-  	Visual Studio IDE - 2019 Community (installs Clang too):
-
-  	  	choco install -y visualstudio2019community --package-parameters "add Microsoft.VisualStudio.Workload.NativeDesktop --includeRecommended --includeOptional --passive --locale en-US"
-
-	Put MSVC compiler, Clang compiler, and vcvarsall.bat on the path:
-
-			choco install vswhere -y
-			refreshenv
-
-			# change to x86 for 32bit
-			$clpath = vswhere -products * -latest -prerelease -find **/Hostx64/x64/*
-			$clangpath = vswhere -products * -latest -prerelease -find **/Llvm/bin/*
-			$vcvarsallpath =  vswhere -products * -latest -prerelease -find **/Auxiliary/Build/*
-
-			$path = [System.Environment]::GetEnvironmentVariable("PATH", "User")
-			[Environment]::SetEnvironmentVariable("Path", $path + ";$clpath" + ";$clangpath" + ";$vcvarsallpath", "User")
-			refreshenv
-
-	</details>
 
 
 2. [Conan](https://conan.io/)
@@ -208,29 +139,4 @@ The following compilers should work:
 	Follow instructions here:
 	https://github.com/include-what-you-use/include-what-you-use#how-to-install
 	</details>
-
-#### GUI libraries
-This project can be made to work with several optional GUI frameworks.
-
-If desired, you should install the following optional dependencies as
-directed by their documentation, linked here:
-
-- [FLTK](https://www.fltk.org/doc-1.4/index.html)
-- [GTKMM](https://www.gtkmm.org/en/documentation.html)
-- [QT](https://doc.qt.io/)
-
-The following dependencies can be downloaded automatically by CMake and Conan.
-All you need to do to install them is to turn on a CMake flag during
-configuration.
-If you run into difficulty using them, please refer to their documentation,
-linked here:
-
-- [NANA](http://nanapro.org/en-us/documentation/)
-- [SDL](http://wiki.libsdl.org/FrontPage)
-- [IMGUI](https://github.com/ocornut/imgui/tree/master/docs):
-  This framework depends on SFML, and if you are using Linux, you may need
-  to install several of SFML's dependencies using your package manager. See
-  [the SFML build tutorial](https://www.sfml-dev.org/tutorials/2.5/compile-with-cmake.php)
-  for specifics.
-
 

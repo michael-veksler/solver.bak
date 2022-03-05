@@ -1,13 +1,23 @@
-# cpp_boilerplate_project
+# A generic constaint solver in C++
 
-[![ci](https://github.com/cpp-best-practices/cpp_starter_project/actions/workflows/ci.yml/badge.svg)](https://github.com/cpp-best-practices/cpp_starter_project/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/cpp-best-practices/cpp_boilerplate_project/branch/main/graph/badge.svg)](https://codecov.io/gh/cpp-best-practices/cpp_starter_project)
-[![Language grade: C++](https://img.shields.io/lgtm/grade/cpp/github/cpp-best-practices/cpp_boilerplate_project)](https://lgtm.com/projects/g/cpp-best-practices/cpp_starter_project/context:cpp)
+[![ci](https://github.com/michael-veksler/solver/actions/workflows/ci.yml/badge.svg)](https://github.com/michael-veksler/solver/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/cpp-best-practices/cpp_boilerplate_project/branch/main/graph/badge.svg)](https://codecov.io/gh/michael-veksler/solver)
+[![Language grade: C++](https://img.shields.io/lgtm/grade/cpp/github/cpp-best-practices/cpp_boilerplate_project)](https://lgtm.com/projects/g/michael-veksler/solver/context:cpp)
 
 
-## About cpp_boilerplate_project
+## About the constaint solver
 
-This is a C++ Best Practices GitHub template for getting up and running with C++ quickly.
+Constraint solver's goal is to solve
+[Constraint Satisfaction Problems [(CSPs)](https://en.wikipedia.org/wiki/Constraint_satisfaction_problem). 
+The goal of this solver is to be highly configurable, letting a programmer mix-and-match different
+representation and solving strategies. Like C++ standard library, the configurability is intended to have
+an extremely low abstraction cost.
+
+## Development mode
+
+This is project is based on Jason Turner's
+[c++ starter project](https://github.com/cpp-best-practices/cpp_starter_project).
+As such, it includes the following features (copied from Jason's page):
 
 By default (collectively known as `ENABLE_DEVELOPER_MODE`)
 
@@ -27,39 +37,6 @@ It requires
  * cmake
  * conan
  * a compiler
-
-If you want a more complex example project, check out the [cpp_starter_project](https://github.com/cpp-best-practices/cpp_starter_project).
-
-Ths Boilerplate project will merge new features first, then they will be merged (as appropriate) into cpp_starter_project.
-
-## Getting Started
-
-### Use the Github template
-
-First, click the green `Use this template` button near the top of this page.
-This will take you to Github's ['Generate Repository'](https://github.com/cpp-best-practices/cpp_boilerplate_project/generate) page.
-Fill in a repository name and short description, and click 'Create repository from template'.
-This will allow you to create a new repository in your Github account,
-prepopulated with the contents of this project.
-Now you can clone the project locally and get to work!
-
-    git clone https://github.com/<user>/<your_new_repo>.git
-
-### Remove frameworks you're not going to use
-
-If you know you're not going to use one or more of the optional gui/graphics
-frameworks (fltk, gtkmm, imgui, etc.), you can remove them with `git rm`:
-
-    git rm -r src/<unnecessary_framework>
-
-
-
-## More Details
-
- * [Dependency Setup](README_dependencies.md)
- * [Building Details](README_building.md)
- * [Troubleshooting](README_troubleshooting.md)
- * [Docker](README_docker.md)
 
 ## Testing
 
