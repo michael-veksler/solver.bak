@@ -3,7 +3,7 @@
 [![ci](https://github.com/michael-veksler/solver/actions/workflows/ci.yml/badge.svg)](https://github.com/michael-veksler/solver/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/michael-veksler/solver/branch/main/graph/badge.svg)](https://codecov.io/gh/michael-veksler/solver)
 [![Language grade: C++](https://img.shields.io/lgtm/grade/cpp/github/cpp-best-practices/cpp_boilerplate_project)](https://lgtm.com/projects/g/michael-veksler/solver/context:cpp)
-
+[![CodeQL](https://github.com/michael-veksler/solver/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/michael-veksler/solver/actions/workflows/codeql-analysis.yml)
 
 ## About the constaint solver
 
