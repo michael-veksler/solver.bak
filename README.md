@@ -28,7 +28,7 @@ By default (collectively known as `ENABLE_DEVELOPER_MODE`)
 
 It includes
 
- * a basic CLI example
+ * a basic SDL example
  * examples for fuzz, unit, and constexpr testing
  * large github action testing matrix
 
