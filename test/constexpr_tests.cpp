@@ -1,14 +1,12 @@
 #include <catch2/catch.hpp>
 
-constexpr unsigned int Factorial(unsigned int number)// NOLINT(misc-no-recursion)
-{
-  return number <= 1 ? number : Factorial(number - 1) * number;
-}
+#include "../src/binary_clause.hpp"
+#include "test_constraints.hpp"
 
-TEST_CASE("Factorials are computed with constexpr", "[factorial]")
+using namespace solver::test;
+
+TEST_CASE("concepts", "[parameters]")
 {
-  STATIC_REQUIRE(Factorial(1) == 1);
-  STATIC_REQUIRE(Factorial(2) == 2);
-  STATIC_REQUIRE(Factorial(3) == 6);
-  STATIC_REQUIRE(Factorial(10) == 3628800);
+    STATIC_REQUIRE(solver::constraint<solver::binary_clause<test_constraint_state>>);
+    STATIC_REQUIRE(solver::constraint_state<test_constraint_state>);
 }

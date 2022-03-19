@@ -1,5 +1,6 @@
 # Build directories and binary files
 build/
+solver.build/
 out/
 cmake-build-*/
 
