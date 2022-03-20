@@ -4,6 +4,7 @@
 #include "test_constraints.hpp"
 
 using namespace solver::test;
+using solver::propagation_result_t;
 
 TEST_CASE("is_satisfied", "[binary_clause]")
 {
@@ -28,36 +29,50 @@ TEST_CASE("is_satisfied", "[binary_clause]")
     CHECK(clause.is_satisfied(state));
 }
 
+struct propagation_operation
+{
+    std::vector<std::set<bool>> variables;
+    unsigned trigger_param;
+    std::set<unsigned> expect_watches;
+    propagation_result_t result;
+};
+
 
 TEST_CASE("propagate", "[binary_clause]")
 {
-    const test_constraint_state initial_state{ .m_variables = std::vector<std::set<bool>>(4, { false, true }),
-        .m_watches = {} };
-    solver::binary_clause<test_constraint_state> clause{ { 0, 1, 2, 3 }, { true, false, true, false } };
-    test_constraint_state state = initial_state;
-    state.m_variables[0] = { false };
-    REQUIRE(clause.propagate(state, 0) == solver::propagation_result_t::CONSISTENT);
-    REQUIRE(state.m_watches == std::set<unsigned>{2});
-    state.m_variables[2] = { true };
-    REQUIRE(clause.propagate(state, 2) == solver::propagation_result_t::SAT);
-    REQUIRE(state.m_watches == std::set<unsigned>{2});
+    using std::vector;
+    using std::set;
+    const set<bool> unset{ { false, true } };
+    const vector<propagation_operation> sequence{ { .variables = { { false }, unset, unset, unset },
+                                                      .trigger_param = 0,
+                                                      .expect_watches = { 2 },
+                                                      .result = propagation_result_t::CONSISTENT },
+        { .variables = { { false }, unset, { true }, unset },
+            .trigger_param = 2,
+            .expect_watches = { 2 },
+            .result = propagation_result_t::SAT },
+        { .variables = { unset, unset, { false }, unset },
+            .trigger_param = 2,
+            .expect_watches = { 3 },
+            .result = propagation_result_t::CONSISTENT },
+        { .variables = { unset, { true }, { false }, unset },
+            .trigger_param = 1,
+            .expect_watches = { 0, 3 },
+            .result = propagation_result_t::CONSISTENT },
+        { .variables = { {false}, { true }, { false }, {true} },
+            .trigger_param = 1,
+            .expect_watches = { 0, 3 },
+            .result = propagation_result_t::UNSAT },
+        { .variables = { unset, unset, unset, {true} },
+            .trigger_param = 3,
+            .expect_watches = { 0, 1 },
+            .result = propagation_result_t::CONSISTENT } };
 
-    state.m_variables = initial_state.m_variables;
-    state.m_variables[2] = {false};
-    REQUIRE(clause.propagate(state, 2) == solver::propagation_result_t::CONSISTENT);
-    REQUIRE(state.m_watches == std::set<unsigned>{3});
-    
-    state.m_variables[1] = {true};
-    REQUIRE(clause.propagate(state, 1) == solver::propagation_result_t::CONSISTENT);
-    REQUIRE(state.m_watches == std::set<unsigned>{0,3});
-    
-    state.m_variables[3] = {true};
-    state.m_variables[0] = {false};
-    REQUIRE(clause.propagate(state, 1) == solver::propagation_result_t::UNSAT);
-    REQUIRE(state.m_watches == std::set<unsigned>{0,3});
-    
-    state.m_variables = initial_state.m_variables;
-    state.m_variables[3] = {true};
-    REQUIRE(clause.propagate(state, 3) == solver::propagation_result_t::CONSISTENT);
-    
+    test_constraint_state state;
+    solver::binary_clause<test_constraint_state> clause{ { 0, 1, 2, 3 }, { true, false, true, false } };
+    for (const auto &[variables, trigger_param, expect_watches, result] : sequence) {
+        state.m_variables = variables;
+        REQUIRE(clause.propagate(state, trigger_param) == result);
+        REQUIRE(state.m_watches == expect_watches);
+    }
 }
