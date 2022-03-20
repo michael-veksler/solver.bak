@@ -70,9 +70,9 @@ TEST_CASE("propagate", "[binary_clause]")
 
     test_constraint_state state;
     solver::binary_clause<test_constraint_state> clause{ { 0, 1, 2, 3 }, { true, false, true, false } };
-    for (const auto &[variables, trigger_param, expect_watches, result] : sequence) {
-        state.m_variables = variables;
-        REQUIRE(clause.propagate(state, trigger_param) == result);
-        REQUIRE(state.m_watches == expect_watches);
+    for (const propagation_operation & op : sequence) {
+        state.m_variables = op.variables;
+        REQUIRE(clause.propagate(state, op.trigger_param) == op.result);
+        REQUIRE(state.m_watches == op.expect_watches);
     }
 }
