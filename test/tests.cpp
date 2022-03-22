@@ -66,7 +66,15 @@ TEST_CASE("propagate", "[binary_clause]")
         { .variables = { unset, unset, unset, { true } },
             .trigger_param = 3,
             .expect_watches = { 0, 1 },
-            .result = propagation_result_t::CONSISTENT } };
+            .result = propagation_result_t::CONSISTENT},
+        { .variables = { {false}, unset, {false}, { true } },
+            .trigger_param = 3,
+            .expect_watches = { 0, 1 },
+            .result = propagation_result_t::CONSISTENT},
+        { .variables = { {false}, {false}, {false}, { true } },
+            .trigger_param = 0,
+            .expect_watches = { 0, 1 },
+            .result = propagation_result_t::SAT} };
 
     auto run_test = [&](auto clause) {
         typename decltype(clause)::state_t state;
