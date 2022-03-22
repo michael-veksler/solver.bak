@@ -43,8 +43,9 @@ class binary_clause
             return propagate_by_watch(state, m_watch1, m_watch0);
         } else if (trigger_param == m_watch1) {
             return propagate_by_watch(state, m_watch1, m_watch0);
+        } else {
+            return propagation_result_t::CONSISTENT;
         }
-        return propagation_result_t::CONSISTENT;
     }
 
 
