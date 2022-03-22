@@ -1,6 +1,3 @@
-# sdl example
-add_subdirectory(sdl)
-
 find_package(fmt CONFIG)
 find_package(spdlog CONFIG)
 find_package(docopt CONFIG)
