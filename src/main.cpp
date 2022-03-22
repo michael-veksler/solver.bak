@@ -19,12 +19,14 @@ static constexpr auto USAGE =
           naval_fate mine (set|remove) <x> <y> [--moored | --drifting]
           naval_fate (-h | --help)
           naval_fate --version
- Options:
+          naval_fate --dummy
+Options:
           -h --help     Show this screen.
           --version     Show version.
           --speed=<kn>  Speed in knots [default: 10].
           --moored      Moored (anchored) mine.
           --drifting    Drifting mine.
+          --dummy       Just a dummy flag used for safe coverage testing.
 )";
 
 int main(int argc, const char **argv)

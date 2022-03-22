@@ -29,6 +29,16 @@ TEST_CASE("is_satisfied", "[binary_clause]")
     CHECK(clause.is_satisfied(state));
 }
 
+TEST_CASE("get_value() over non-assigned error", "[test_constraint_state]")
+{
+  const std::set<bool> unset{ { false, true } };
+
+  test_constraint_state<> state{.m_variables = {unset}, .m_watches = {}};
+  test_constraint_state<>::parameter_t param(0);
+  REQUIRE(state.get_domain(param) == unset);
+  REQUIRE_THROWS_AS(state.get_value(param), std::domain_error);
+}
+
 struct propagation_operation
 {
     std::vector<std::set<bool>> variables;
@@ -36,6 +46,7 @@ struct propagation_operation
     std::set<unsigned> expect_watches;
     propagation_result_t result;
 };
+
 
 
 TEST_CASE("propagate", "[binary_clause]")
@@ -75,7 +86,6 @@ TEST_CASE("propagate", "[binary_clause]")
             .trigger_param = 0,
             .expect_watches = { 0, 1 },
             .result = propagation_result_t::SAT} };
-
     auto run_test = [&](auto clause) {
         typename decltype(clause)::state_t state;
         for (const propagation_operation &op : sequence) {
