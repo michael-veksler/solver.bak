@@ -7,6 +7,10 @@ using namespace solver::test;
 
 TEST_CASE("concepts", "[parameters]")
 {
-    STATIC_REQUIRE(solver::constraint<solver::binary_clause<test_constraint_state>>);
-    STATIC_REQUIRE(solver::constraint_state<test_constraint_state>);
+    STATIC_REQUIRE(solver::constraint<solver::binary_clause<test_constraint_state<>>>);
+    STATIC_REQUIRE(solver::constraint_state<test_constraint_state<>>);
+    STATIC_REQUIRE(solver::constraint<solver::binary_clause<test_constraint_state<false>>>);
+    STATIC_REQUIRE(solver::constraint_state<test_constraint_state<false>>);
+    STATIC_REQUIRE(solver::constraint<solver::binary_clause<test_constraint_state<true>>>);
+    STATIC_REQUIRE(solver::constraint_state<test_constraint_state<true>>);
 }

@@ -8,10 +8,10 @@ using solver::propagation_result_t;
 
 TEST_CASE("is_satisfied", "[binary_clause]")
 {
-    const test_constraint_state initial_state{ .m_variables = { { false }, { true }, { false }, { true } },
+    const test_constraint_state<> initial_state{ .m_variables = { { false }, { true }, { false }, { true } },
         .m_watches = {} };
-    test_constraint_state state = initial_state;
-    solver::binary_clause<test_constraint_state> clause{ { 0, 1, 2, 3 }, { true, false, true, false } };
+    test_constraint_state<> state = initial_state;
+    solver::binary_clause<test_constraint_state<>> clause{ { 0, 1, 2, 3 }, { true, false, true, false } };
     CHECK(!clause.is_satisfied(state));
     state.m_variables[0] = { true };
     CHECK(clause.is_satisfied(state));
@@ -59,20 +59,26 @@ TEST_CASE("propagate", "[binary_clause]")
             .trigger_param = 1,
             .expect_watches = { 0, 3 },
             .result = propagation_result_t::CONSISTENT },
-        { .variables = { {false}, { true }, { false }, {true} },
-            .trigger_param = 1,
+        { .variables = { { false }, { true }, { false }, { true } },
+            .trigger_param = 3,
             .expect_watches = { 0, 3 },
             .result = propagation_result_t::UNSAT },
-        { .variables = { unset, unset, unset, {true} },
+        { .variables = { unset, unset, unset, { true } },
             .trigger_param = 3,
             .expect_watches = { 0, 1 },
             .result = propagation_result_t::CONSISTENT } };
 
-    test_constraint_state state;
-    solver::binary_clause<test_constraint_state> clause{ { 0, 1, 2, 3 }, { true, false, true, false } };
-    for (const propagation_operation & op : sequence) {
-        state.m_variables = op.variables;
-        REQUIRE(clause.propagate(state, op.trigger_param) == op.result);
-        REQUIRE(state.m_watches == op.expect_watches);
-    }
+    auto run_test = [&](auto clause) {
+        typename decltype(clause)::state_t state;
+        for (const propagation_operation &op : sequence) {
+            state.m_variables = op.variables;
+            state.m_variables = op.variables;
+            REQUIRE(clause.propagate(state, op.trigger_param) == op.result);
+            REQUIRE(state.m_watches == op.expect_watches);
+        }
+    };
+    solver::binary_clause<test_constraint_state<>> strict_clause{ { 0, 1, 2, 3 }, { true, false, true, false } };
+    run_test(strict_clause);
+    solver::binary_clause<test_constraint_state<false>> lax_clause{ { 0, 1, 2, 3 }, { true, false, true, false } };
+    run_test(lax_clause);
 }

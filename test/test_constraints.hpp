@@ -5,23 +5,23 @@
 
 namespace solver::test {
 
-struct test_constraint_state;
+template<bool only_watches_trigger_ = true> struct test_constraint_state;
 
 class test_bool_parameter
 {
   public:
     test_bool_parameter(unsigned id, void * = nullptr) : m_variable_id(id) {}
-    friend test_constraint_state;
+    template<bool> friend struct test_constraint_state;
 
   private:
     unsigned m_variable_id;
 };
 
-struct test_constraint_state
+template<bool only_watches_trigger_> struct test_constraint_state
 {
     //  static constexpr bool only_watches_trigger = true;
     using param_index_t = uint8_t;
-    static constexpr bool only_watches_trigger = true;
+    static constexpr bool only_watches_trigger = only_watches_trigger_;
     using domain_type = std::set<bool>;
     using parameter_t = test_bool_parameter;
 
