@@ -38,6 +38,13 @@ It requires
  * conan
  * a compiler
 
+## More Details
+
+ * [Dependency Setup](README_dependencies.md)
+ * [Building Details](README_building.md)
+ * [Troubleshooting](README_troubleshooting.md)
+ * [Docker](README_docker.md)
+
 ## Testing
 
 See [Catch2 tutorial](https://github.com/catchorg/Catch2/blob/master/docs/tutorial.md)
