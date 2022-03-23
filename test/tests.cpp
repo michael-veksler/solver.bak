@@ -31,12 +31,12 @@ TEST_CASE("is_satisfied", "[binary_clause]")
 
 TEST_CASE("get_value() over non-assigned error", "[test_constraint_state]")
 {
-  const std::set<bool> unset{ { false, true } };
+    const std::set<bool> unset{ { false, true } };
 
-  test_constraint_state<> state{.m_variables = {unset}, .m_watches = {}};
-  test_constraint_state<>::parameter_t param(0);
-  REQUIRE(state.get_domain(param) == unset);
-  REQUIRE_THROWS_AS(state.get_value(param), std::domain_error);
+    test_constraint_state<> state{ .m_variables = { unset }, .m_watches = {} };
+    test_constraint_state<>::parameter_t param(0);
+    REQUIRE(state.get_domain(param) == unset);
+    REQUIRE_THROWS_AS(state.get_value(param), std::domain_error);
 }
 
 struct propagation_operation
@@ -46,7 +46,6 @@ struct propagation_operation
     std::set<unsigned> expect_watches;
     propagation_result_t result;
 };
-
 
 
 TEST_CASE("propagate", "[binary_clause]")
@@ -77,15 +76,15 @@ TEST_CASE("propagate", "[binary_clause]")
         { .variables = { unset, unset, unset, { true } },
             .trigger_param = 3,
             .expect_watches = { 0, 1 },
-            .result = propagation_result_t::CONSISTENT},
-        { .variables = { {false}, unset, {false}, { true } },
+            .result = propagation_result_t::CONSISTENT },
+        { .variables = { { false }, unset, { false }, { true } },
             .trigger_param = 3,
             .expect_watches = { 0, 1 },
-            .result = propagation_result_t::CONSISTENT},
-        { .variables = { {false}, {false}, {false}, { true } },
+            .result = propagation_result_t::CONSISTENT },
+        { .variables = { { false }, { true }, { false }, { false } },
             .trigger_param = 0,
             .expect_watches = { 0, 1 },
-            .result = propagation_result_t::SAT} };
+            .result = propagation_result_t::SAT } };
     auto run_test = [&](auto clause) {
         typename decltype(clause)::state_t state;
         for (const propagation_operation &op : sequence) {
@@ -99,4 +98,24 @@ TEST_CASE("propagate", "[binary_clause]")
     run_test(strict_clause);
     solver::binary_clause<test_constraint_state<false>> lax_clause{ { 0, 1, 2, 3 }, { true, false, true, false } };
     run_test(lax_clause);
+}
+
+TEST_CASE("propagate unwatched only_watch_trigger=false", "[binary_clause]")
+{
+
+    const std::set<bool> unset{ { false, true } };
+    solver::binary_clause<test_constraint_state<false>> clause{ { 0, 1, 2, 3 }, { true, false, true, false } };
+    decltype(clause)::state_t state{ .m_variables = { unset, unset, unset, { true } }, .m_watches = {} };
+    REQUIRE(clause.propagate(state, 3) == propagation_result_t::CONSISTENT);
+    REQUIRE(state.m_watches.empty());
+}
+
+TEST_CASE("propagate unwatched only_watch_trigger=true", "[binary_clause]")
+{
+
+    const std::set<bool> unset{ { false, true } };
+    solver::binary_clause<test_constraint_state<true>> clause{ { 0, 1, 2, 3 }, { true, false, true, false } };
+    decltype(clause)::state_t state{ .m_variables = { unset, unset, unset, { true } }, .m_watches = {} };
+    REQUIRE_THROWS_AS(clause.propagate(state, 3), std::domain_error);
+    REQUIRE(state.m_watches.empty());
 }
