@@ -71,8 +71,10 @@ class binary_clause
             }
         }
         if (const auto &literal = m_literals[other_watch]; state.get_domain(literal.first).count(literal.second)) {
-            return state.get_domain(literal.first).size() == 1 ? propagation_result_t::SAT
-                                                               : propagation_result_t::CONSISTENT;
+            if (state.get_domain(literal.first).size() > 1) {
+                state.set_value(literal.first, literal.second);
+            }
+            return propagation_result_t::SAT;
         }
         return propagation_result_t::UNSAT;
     }

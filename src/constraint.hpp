@@ -26,6 +26,8 @@ concept constraint_state = requires(T a)
     {
         a.get_domain(std::declval<typename T::parameter_t>())
         } -> std::convertible_to<typename T::domain_type>;
+    { a.set_value(std::declval<typename T::parameter_t>(), std::declval<typename T::domain_type::value_type>()) };
+    { a.set_domain(std::declval<typename T::parameter_t>(), std::declval<typename T::domain_type>()) };
 };
 
 enum class propagation_result_t : int8_t { UNSAT, CONSISTENT, SAT };

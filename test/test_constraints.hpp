@@ -36,6 +36,14 @@ template<bool only_watches_trigger_> struct test_constraint_state
     {
         return m_variables[param.m_variable_id];
     }
+    void set_value(test_bool_parameter param, bool value)
+    {
+        m_variables[param.m_variable_id] = std::set<bool>{value};
+    }
+    void set_domain(test_bool_parameter param, const domain_type & dom)
+    {
+        m_variables[param.m_variable_id] = dom;
+    }
 
     void register_watch(parameter_t param) { m_watches.insert(param.m_variable_id); }
     void unregister_watch(parameter_t param) { m_watches.erase(param.m_variable_id); }

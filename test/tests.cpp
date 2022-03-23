@@ -76,10 +76,6 @@ TEST_CASE("propagate", "[binary_clause]")
             .trigger_param = 3,
             .expect_watches = { 0, 1 },
             .result = propagation_result_t::CONSISTENT },
-        { .variables = { { false }, unset, { false }, { true } },
-            .trigger_param = 3,
-            .expect_watches = { 0, 1 },
-            .result = propagation_result_t::CONSISTENT },
         { .variables = { { false }, { true }, { false }, { false } },
             .trigger_param = 0,
             .expect_watches = { 0, 1 },
@@ -93,6 +89,24 @@ TEST_CASE("propagate", "[binary_clause]")
             REQUIRE(state.m_watches == op.expect_watches);
         }
     };
+    solver::binary_clause<test_constraint_state<>> strict_clause{ { 0, 1, 2, 3 }, { true, false, true, false } };
+    run_test(strict_clause);
+    solver::binary_clause<test_constraint_state<false>> lax_clause{ { 0, 1, 2, 3 }, { true, false, true, false } };
+    run_test(lax_clause);
+}
+
+TEST_CASE("propagate set_domain", "[binary_clause]")
+{
+    using std::set;
+    using std::vector;
+    const set<bool> unset{ { false, true } };
+    auto run_test = [&](auto clause) {
+        typename decltype(clause)::state_t state;
+        state.m_variables = {{false}, unset, {false}, {true}};
+        REQUIRE(clause.propagate(state, 0) == propagation_result_t::SAT);
+        REQUIRE(state.m_variables == vector<set<bool>>{{false}, {false}, {false}, {true}});
+    };
+
     solver::binary_clause<test_constraint_state<>> strict_clause{ { 0, 1, 2, 3 }, { true, false, true, false } };
     run_test(strict_clause);
     solver::binary_clause<test_constraint_state<false>> lax_clause{ { 0, 1, 2, 3 }, { true, false, true, false } };
