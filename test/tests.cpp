@@ -47,7 +47,6 @@ struct propagation_operation
     propagation_result_t result;
 };
 
-
 TEST_CASE("propagate", "[binary_clause]")
 {
     using std::vector;
@@ -107,7 +106,8 @@ TEST_CASE("propagate unwatched only_watch_trigger=false", "[binary_clause]")
     solver::binary_clause<test_constraint_state<false>> clause{ { 0, 1, 2, 3 }, { true, false, true, false } };
     decltype(clause)::state_t state{ .m_variables = { unset, unset, unset, { true } }, .m_watches = {} };
     REQUIRE(clause.propagate(state, 3) == propagation_result_t::CONSISTENT);
-    REQUIRE(state.m_watches.empty());
+    REQUIRE(state.m_watches == std::set<unsigned>{ 1 });
+    REQUIRE_THROWS_AS(clause.propagate(state, 4), std::out_of_range);
 }
 
 TEST_CASE("propagate unwatched only_watch_trigger=true", "[binary_clause]")

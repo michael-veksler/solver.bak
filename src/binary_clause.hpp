@@ -35,18 +35,17 @@ class binary_clause
     }
     propagation_result_t propagate(state_t &state, unsigned trigger_param)
     {
-        assert(trigger_param < m_literals.size());
         if (trigger_param == m_watch0) {
             return propagate_by_watch(state, m_watch0, m_watch1);
         }
         if constexpr (state_t::only_watches_trigger) {
             return propagate_by_watch(state, m_watch1, m_watch0);
         } else {
-            if (trigger_param == m_watch1) {
-                return propagate_by_watch(state, m_watch1, m_watch0);
-            } else {
-                return propagation_result_t::CONSISTENT;
+            if (trigger_param >= m_literals.size() || trigger_param > std::numeric_limits<param_index_t>::max()) {
+                throw std::out_of_range("tigger param is too big");
             }
+            m_watch1 = static_cast<param_index_t>(trigger_param);
+            return propagate_by_watch(state, m_watch1, m_watch0);
         }
     }
 
