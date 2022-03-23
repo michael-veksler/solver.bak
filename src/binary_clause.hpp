@@ -41,10 +41,12 @@ class binary_clause
         }
         if constexpr (state_t::only_watches_trigger) {
             return propagate_by_watch(state, m_watch1, m_watch0);
-        } else if (trigger_param == m_watch1) {
-            return propagate_by_watch(state, m_watch1, m_watch0);
         } else {
-            return propagation_result_t::CONSISTENT;
+            if (trigger_param == m_watch1) {
+                return propagate_by_watch(state, m_watch1, m_watch0);
+            } else {
+                return propagation_result_t::CONSISTENT;
+            }
         }
     }
 
@@ -58,17 +60,16 @@ class binary_clause
         param_index_t next_watch = get_next_watch(triggered_watch);
         for (; next_watch != triggered_watch; next_watch = get_next_watch(next_watch)) {
             auto [param, positive_literal] = m_literals[next_watch];
-            if (next_watch == other_watch || state.get_domain(param).count(positive_literal) == 0) {
-                continue;
-            }
-            if (state.get_domain(param).size() == 1) {
-                return propagation_result_t::SAT;
-            }
+            if (next_watch != other_watch && state.get_domain(param).count(positive_literal)) {
+                if (state.get_domain(param).size() == 1) {
+                    return propagation_result_t::SAT;
+                }
 
-            state.unregister_watch(m_literals[triggered_watch].first);
-            triggered_watch = next_watch;
-            state.register_watch(param);
-            return propagation_result_t::CONSISTENT;
+                state.unregister_watch(m_literals[triggered_watch].first);
+                triggered_watch = next_watch;
+                state.register_watch(param);
+                return propagation_result_t::CONSISTENT;
+            }
         }
         if (const auto &literal = m_literals[other_watch]; state.get_domain(literal.first).count(literal.second)) {
             return state.get_domain(literal.first).size() == 1 ? propagation_result_t::SAT
