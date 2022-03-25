@@ -2,9 +2,8 @@ find_package(fmt CONFIG)
 find_package(spdlog CONFIG)
 find_package(docopt CONFIG)
 
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS 1)
 
-add_library(solver SHARED dimacs_parser.cpp)
+add_library(solver STATIC dimacs_parser.cpp)
 target_link_libraries(
   solver
   PRIVATE project_options
