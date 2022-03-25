@@ -155,9 +155,13 @@ TEST_CASE("dimacs parse errors", "[dimacs_parser]")
 
     const std::array parse_error_tests = {
         std::pair{ ""s, "Invalid dimacs input format - all lines are either empty or commented out"s },
+        std::pair{ "p cn 2 3"s, "1: Invalid dimacs input format, expecting a line prefix 'p cnf ' but got 'p cn 2 3'"s},
         std::pair{ R"(c foo
                       p cnf -3 2)"s,
             "2: Invalid dimacs input format, expecting a header 'p cnf <variables: unsigned int> <clauses: unsigned int>' but got 'p cnf -3 2'"s },
+        std::pair{ R"(p cnf 2 3 4
+                     1 2 0)"s,
+            "1: Invalid dimacs input format, junk after header '4'"s},
         std::pair{ R"(
                      p cnf 10 20
                      1 -2 0

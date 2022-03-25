@@ -29,7 +29,7 @@ void parse_dimacs_header(std::istream &in,
         str >> cmd >> format;
         if (!str || cmd != "p" || format != "cnf") {
             throw std::runtime_error(fmt::format(
-                "{}: Invalid dimacs input format, expecting a line prefix 'p cnf' but got '{}'", line_num, line_view));
+                "{}: Invalid dimacs input format, expecting a line prefix 'p cnf ' but got '{}'", line_num, line_view));
         }
 
         int variables = 0;
