@@ -13,7 +13,7 @@ std::string_view lstrip(std::string_view sv)
 
 
 void parse_dimacs_header(std::istream &in,
-    unsigned & line_num,
+    unsigned &line_num,
     const std::function<void(unsigned, unsigned)> &construct_problem)
 {
     for (std::string line; std::getline(in, line); ++line_num) {
@@ -25,22 +25,20 @@ void parse_dimacs_header(std::istream &in,
         std::string cmd;
         std::string format;
         str >> cmd >> format;
-        if (!str || cmd != "p" || format != "cnf")
-        {
-            throw std::runtime_error(
-                fmt::format("{}: Invalid dimacs input format, expecting a line prefix 'p cnf' but got '{}'",
-                    line_num,
-                    line_view));
+        if (!str || cmd != "p" || format != "cnf") {
+            throw std::runtime_error(fmt::format(
+                "{}: Invalid dimacs input format, expecting a line prefix 'p cnf' but got '{}'", line_num, line_view));
         }
 
         int variables = 0;
         int clauses = 0;
         str >> variables >> clauses;
         if (!str || variables < 0 || clauses < 0) {
-            throw std::runtime_error(fmt::format(
-                "{}: Invalid dimacs input format, expecting a header 'p cnf <variables: unsigned int> <clauses: unsigned int>' but got '{}'",
-                line_num,
-                line_view));
+            throw std::runtime_error(
+                fmt::format("{}: Invalid dimacs input format, expecting a header 'p cnf <variables: unsigned int> "
+                            "<clauses: unsigned int>' but got '{}'",
+                    line_num,
+                    line_view));
         }
 
         line.clear();
@@ -75,16 +73,15 @@ void parse_dimacs(std::istream &in,
         while (true) {
             int literal = 0;
             if (!(str >> literal)) {
-                if (found_zero)
-                {break; }
+                if (found_zero) {
+                    break;
+                }
                 throw std::runtime_error(
                     fmt::format("{}: Missing 0 at the end of the line for line '{}'", line_num, line_view));
             }
-            if (found_zero)
-            {
+            if (found_zero) {
                 throw std::runtime_error(
                     fmt::format("{}: 0 should be only at the end for the line '{}'", line_num, line_view));
-            
             }
             if (literal == 0) {
                 found_zero = true;

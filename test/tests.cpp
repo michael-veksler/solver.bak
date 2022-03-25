@@ -1,3 +1,4 @@
+#include <array>
 #include <catch2/catch.hpp>
 #include <sstream>
 #include <string>
@@ -151,36 +152,29 @@ TEST_CASE("dimacs parse errors", "[dimacs_parser]")
 
     std::vector<std::vector<int>> clauses;
     auto register_clause = [&](const std::vector<int> &read_clauses) { clauses.push_back(read_clauses); };
-    std::istringstream empty;
-    REQUIRE_THROWS_MATCHES(solver::parse_dimacs(empty, construct_problem, register_clause),
-        std::runtime_error,
-        Message("Invalid dimacs input format - all lines are either empty or commented out"s));
 
-    std::istringstream bad_header(R"(
-        c foo
-        p cnf -3 2
-    )");
-    REQUIRE_THROWS_MATCHES(solver::parse_dimacs(bad_header, construct_problem, register_clause),
-        std::runtime_error,
-        Message("3: Invalid dimacs input format, expecting a header 'p cnf <variables: unsigned int> <clauses: unsigned int>' but got 'p cnf -3 2'"s));
+    const std::array parse_error_tests = {
+        std::pair{ ""s, "Invalid dimacs input format - all lines are either empty or commented out"s },
+        std::pair{ R"(c foo
+                      p cnf -3 2)"s,
+            "2: Invalid dimacs input format, expecting a header 'p cnf <variables: unsigned int> <clauses: unsigned int>' but got 'p cnf -3 2'"s },
+        std::pair{ R"(
+                     p cnf 10 20
+                     1 -2 0
+                     2 0 3 0)"s,
+            "4: 0 should be only at the end for the line '2 0 3 0'"s },
+        std::pair{ R"(p      cnf  10  20
+                     1 -2 3
+                     2 2 3 0)"s,
+            "2: Missing 0 at the end of the line for line '1 -2 3'"s }
 
-    std::istringstream invalid_zero_literal(R"(
-        p cnf 10 20
-        1 -2 0
-        2 0 3 0
-    )");
-    REQUIRE_THROWS_MATCHES(solver::parse_dimacs(invalid_zero_literal, construct_problem, register_clause),
-        std::runtime_error,
-        Message("4: 0 should be only at the end for the line '2 0 3 0'"s));
-
-    std::istringstream missing_zero_literal(R"(
-        p cnf 10 20
-        1 -2 3
-        2 2 3 0
-    )");
-    REQUIRE_THROWS_MATCHES(solver::parse_dimacs(missing_zero_literal, construct_problem, register_clause),
-        std::runtime_error,
-        Message("3: Missing 0 at the end of the line for line '1 -2 3'"s));
+    };
+    for (const auto &[text, expected_message] : parse_error_tests) {
+        std::istringstream text_stream{ text };
+        REQUIRE_THROWS_MATCHES(solver::parse_dimacs(text_stream, construct_problem, register_clause),
+            std::runtime_error,
+            Message(expected_message));
+    }
 }
 
 TEST_CASE("dimacs parse", "[dimacs_parser]")
@@ -195,7 +189,7 @@ TEST_CASE("dimacs parse", "[dimacs_parser]")
         n_clauses = read_clauses;
     };
 
-     std::vector<std::vector<int>> clauses;
+    std::vector<std::vector<int>> clauses;
     auto register_clause = [&](const std::vector<int> &read_clauses) { clauses.push_back(read_clauses); };
 
     std::istringstream text(R"(
@@ -208,5 +202,5 @@ TEST_CASE("dimacs parse", "[dimacs_parser]")
     solver::parse_dimacs(text, construct_problem, register_clause);
     CHECK(n_variables == 4);
     CHECK(n_clauses == 5);
-    CHECK(clauses == std::vector<std::vector<int>>{{1, -2, 3}, {2, 3}, {-1, 2, -3, 4}, {1, -2, -3, -4}});
+    CHECK(clauses == std::vector<std::vector<int>>{ { 1, -2, 3 }, { 2, 3 }, { -1, 2, -3, 4 }, { 1, -2, -3, -4 } });
 }
