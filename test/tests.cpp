@@ -207,8 +207,6 @@ TEST_CASE("dimacs missing 0 at clause end", "[dimacs_parser]")
         Catch::Matchers::Message("2: Missing 0 at the end of the line for line '1 -2 3'"));
 }
 
-#include <iostream>
-
 TEST_CASE("dimacs parse", "[dimacs_parser]")
 {
     dimacs_parse_case parse_result = dimacs_parse_case(R"(

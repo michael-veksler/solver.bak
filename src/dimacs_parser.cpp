@@ -1,7 +1,6 @@
 #include "dimacs_parser.hpp"
 #include <cassert>
 #include <fmt/format.h>
-#include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -20,9 +19,6 @@ void parse_dimacs_header(std::istream &in,
     const std::function<void(unsigned, unsigned)> &construct_problem)
 {
     for (std::string line; std::getline(in, line); ++line_num) {
-        if (line_num == std::numeric_limits<unsigned>::max()) {
-            throw std::runtime_error("Potentially infinite loop in parse_dimacs_header");
-        }
         std::string_view line_view = lstrip(line);
         if (line_view.empty() || line_view[0] == 'c') {
             continue;
@@ -68,9 +64,6 @@ void parse_dimacs(std::istream &in,
     std::string line;
     std::vector<int> literals;
     for (++line_num; std::getline(in, line); ++line_num) {
-        if (line_num == std::numeric_limits<unsigned>::max()) {
-            throw std::runtime_error("Potentially infinite loop in parse_dimacs");
-        }
         std::string_view line_view = lstrip(line);
         if (line_view.empty() || line_view[0] == 'c') {
             continue;

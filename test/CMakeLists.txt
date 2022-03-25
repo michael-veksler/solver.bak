@@ -27,6 +27,7 @@ catch_discover_tests(
   tests
   TEST_PREFIX
   "unittests."
+  PROPERTIES VERBOSE 1 TIMEOUT 10
   REPORTER
   xml
   OUTPUT_DIR
