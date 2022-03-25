@@ -138,73 +138,88 @@ TEST_CASE("propagate unwatched only_watch_trigger=true", "[binary_clause]")
     REQUIRE(state.m_watches.empty());
 }
 
-TEST_CASE("dimacs parse errors", "[dimacs_parser]")
+struct dimacs_parse_case
 {
-    using Catch::Matchers::Contains;
-    using Catch::Matchers::Message;
-    using namespace std::literals::string_literals;
-    unsigned n_variables = 0;
-    unsigned n_clauses = 0;
-    auto construct_problem = [&](unsigned read_vars, unsigned read_clauses) {
-        n_variables = read_vars;
-        n_clauses = read_clauses;
-    };
-
-    std::vector<std::vector<int>> clauses;
-    auto register_clause = [&](const std::vector<int> &read_clauses) { clauses.push_back(read_clauses); };
-
-    const std::array parse_error_tests = {
-        std::pair{ ""s, "Invalid dimacs input format - all lines are either empty or commented out"s },
-        std::pair{ "p cn 2 3"s, "1: Invalid dimacs input format, expecting a line prefix 'p cnf ' but got 'p cn 2 3'"s},
-        std::pair{ R"(c foo
-                      p cnf -3 2)"s,
-            "2: Invalid dimacs input format, expecting a header 'p cnf <variables: unsigned int> <clauses: unsigned int>' but got 'p cnf -3 2'"s },
-        std::pair{ R"(p cnf 2 3 4
-                     1 2 0)"s,
-            "1: Invalid dimacs input format, junk after header '4'"s},
-        std::pair{ R"(
-                     p cnf 10 20
-                     1 -2 0
-                     2 0 3 0)"s,
-            "4: 0 should be only at the end for the line '2 0 3 0'"s },
-        std::pair{ R"(p      cnf  10  20
-                     1 -2 3
-                     2 2 3 0)"s,
-            "2: Missing 0 at the end of the line for line '1 -2 3'"s }
-
-    };
-    for (const auto &[text, expected_message] : parse_error_tests) {
+    explicit dimacs_parse_case(const std::string &text)
+    {
         std::istringstream text_stream{ text };
-        REQUIRE_THROWS_MATCHES(solver::parse_dimacs(text_stream, construct_problem, register_clause),
-            std::runtime_error,
-            Message(expected_message));
+        auto construct_problem = [this](unsigned read_vars, unsigned read_clauses) {
+            this->n_variables = read_vars;
+            this->n_clauses = read_clauses;
+        };
+        auto register_clause = [this](const std::vector<int> &read_clauses) { clauses.push_back(read_clauses); };
+
+        solver::parse_dimacs(text_stream, construct_problem, register_clause);
     }
+    std::vector<std::vector<int>> clauses;
+    unsigned n_clauses = 0;
+    unsigned n_variables = 0;
+};
+
+TEST_CASE("dimacs empty input", "[dimacs_parser]")
+{
+    REQUIRE_THROWS_MATCHES(dimacs_parse_case(""),
+        std::runtime_error,
+        Catch::Matchers::Message("Invalid dimacs input format - all lines are either empty or commented out"));
 }
+
+TEST_CASE("dimacs bad header prefix", "[dimacs_parser]")
+{
+    REQUIRE_THROWS_MATCHES(dimacs_parse_case("p cn 2 3"),
+        std::runtime_error,
+        Catch::Matchers::Message(
+            "1: Invalid dimacs input format, expecting a line prefix 'p cnf ' but got 'p cn 2 3'"));
+}
+
+TEST_CASE("dimacs header prefix numbers", "[dimacs_parser]")
+{
+    REQUIRE_THROWS_MATCHES(dimacs_parse_case(R"(c foo
+                                                p cnf -3 2)"),
+        std::runtime_error,
+        Catch::Matchers::Message("2: Invalid dimacs input format, expecting a header 'p cnf <variables: unsigned int> "
+                                 "<clauses: unsigned int>' but got 'p cnf -3 2'"));
+}
+
+TEST_CASE("dimacs junk at header end", "[dimacs_parser]")
+{
+    REQUIRE_THROWS_MATCHES(dimacs_parse_case(R"(p cnf 2 3 4
+                                                1 2 0)"),
+        std::runtime_error,
+        Catch::Matchers::Message("1: Invalid dimacs input format, junk after header '4'"));
+}
+
+TEST_CASE("dimacs invalid 0 in clause middle", "[dimacs_parser]")
+{
+    REQUIRE_THROWS_MATCHES(dimacs_parse_case(R"(
+                                                p cnf 10 20
+                                                1 -2 0
+                                                2 0 3 0)"),
+        std::runtime_error,
+        Catch::Matchers::Message("4: 0 should be only at the end for the line '2 0 3 0'"));
+}
+
+TEST_CASE("dimacs missing 0 at clause end", "[dimacs_parser]")
+{
+    REQUIRE_THROWS_MATCHES(dimacs_parse_case(R"(p      cnf  10  20
+                                                1 -2 3
+                                                2 2 3 0)"),
+        std::runtime_error,
+        Catch::Matchers::Message("2: Missing 0 at the end of the line for line '1 -2 3'"));
+}
+
+#include <iostream>
 
 TEST_CASE("dimacs parse", "[dimacs_parser]")
 {
-    using Catch::Matchers::Contains;
-    using Catch::Matchers::Message;
-    using namespace std::literals::string_literals;
-    unsigned n_variables = 0;
-    unsigned n_clauses = 0;
-    auto construct_problem = [&](unsigned read_vars, unsigned read_clauses) {
-        n_variables = read_vars;
-        n_clauses = read_clauses;
-    };
-
-    std::vector<std::vector<int>> clauses;
-    auto register_clause = [&](const std::vector<int> &read_clauses) { clauses.push_back(read_clauses); };
-
-    std::istringstream text(R"(
+    dimacs_parse_case parse_result = dimacs_parse_case(R"(
         p cnf 4 5
         1 -2 3 0
         2 3 0
         -1 2 -3 4 0
         1 -2 -3 -4 0
     )");
-    solver::parse_dimacs(text, construct_problem, register_clause);
-    CHECK(n_variables == 4);
-    CHECK(n_clauses == 5);
-    CHECK(clauses == std::vector<std::vector<int>>{ { 1, -2, 3 }, { 2, 3 }, { -1, 2, -3, 4 }, { 1, -2, -3, -4 } });
+    CHECK(parse_result.n_variables == 4);
+    CHECK(parse_result.n_clauses == 5);
+    CHECK(parse_result.clauses
+          == std::vector<std::vector<int>>{ { 1, -2, 3 }, { 2, 3 }, { -1, 2, -3, 4 }, { 1, -2, -3, -4 } });
 }
