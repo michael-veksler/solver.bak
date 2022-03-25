@@ -3,6 +3,8 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <vector>
+
 namespace solver {
 
 std::string_view lstrip(std::string_view sv)
