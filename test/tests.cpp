@@ -2,6 +2,8 @@
 #include <catch2/catch.hpp>
 #include <sstream>
 #include <string>
+#include <array>
+#include <string_view>
 
 #include "../src/binary_clause.hpp"
 #include "../src/dimacs_parser.hpp"
@@ -9,6 +11,28 @@
 
 using namespace solver::test;
 using solver::propagation_result_t;
+
+TEST_CASE("stream ws", "[stream]")
+{
+    std::istringstream is{" foo bar"};
+    is >> std::ws;
+}   
+
+TEST_CASE("stream get", "[stream]")
+{
+    std::istringstream is{"foo bar"};
+    REQUIRE(is.get() == 'f');
+}   
+
+TEST_CASE("stream get", "[stream]")
+{
+    std::istringstream is{"foo bar"};
+    static constexpr std::string_view foo = "foo";
+    std::array<char, foo.size() + 1> buf{};
+    is.get(buf.data(), buf.size());
+    REQUIRE(std::string(foo) == std::string(buf.data()));    
+}   
+
 
 TEST_CASE("is_satisfied", "[binary_clause]")
 {
