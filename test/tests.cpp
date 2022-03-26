@@ -52,31 +52,6 @@ struct propagation_operation
 };
 
 
-
-TEST_CASE("istring stream read str", "[istream]")
-{
-    std::istringstream is{"p cnf 5 3"};
-    std::string str;
-    is >> str;
-    REQUIRE(str == "p");
-}
-
-TEST_CASE("istring stream read space str", "[istream]")
-{
-    std::istringstream is{"   p cnf 5 3"};
-    std::array<char, 100> str{};
-    is.get(str.data(), str.size() - 1);
-    REQUIRE(std::string(str.data()) == "p");
-}
-
-TEST_CASE("istring stream read space int", "[istream]")
-{
-    std::istringstream is{"   5 3"};
-    int n=0;
-    is >> n;
-    REQUIRE(n == 5);
-}
-
 TEST_CASE("propagate", "[binary_clause]")
 {
     using std::vector;

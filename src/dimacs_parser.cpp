@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <array>
 
 namespace solver {
 
@@ -12,7 +13,6 @@ std::string_view lstrip(std::string_view sv)
     sv.remove_prefix(std::min(sv.find_first_not_of("\t "), sv.size()));
     return sv;
 }
-
 
 void parse_dimacs_header(std::istream &in,
     unsigned &line_num,
@@ -24,10 +24,13 @@ void parse_dimacs_header(std::istream &in,
             continue;
         }
         std::istringstream str{ std::string(line_view) };
-        std::string cmd;
-        std::string format;
-        str >> cmd >> format;
-        if (!str || cmd != "p" || format != "cnf") {
+        static constexpr std::string_view expected_format = "cnf ";
+        std::array<char, std::size(expected_format) + 1> format={0};
+        char cmd = '\0';
+        str >> cmd >> std::ws;
+        str.get(format.data(), format.size());
+
+        if (!str || cmd != 'p' || format.data() != std::string(expected_format) ) {
             throw std::runtime_error(fmt::format(
                 "{}: Invalid dimacs input format, expecting a line prefix 'p cnf ' but got '{}'", line_num, line_view));
         }
