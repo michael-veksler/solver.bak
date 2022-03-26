@@ -64,9 +64,9 @@ TEST_CASE("istring stream read str", "[istream]")
 TEST_CASE("istring stream read space str", "[istream]")
 {
     std::istringstream is{"   p cnf 5 3"};
-    std::string str;
-    is >> str;
-    REQUIRE(str == "p");
+    std::array<char, 100> str{};
+    is.get(str.data(), str.size() - 1);
+    REQUIRE(std::string(str.data()) == "p");
 }
 
 TEST_CASE("istring stream read space int", "[istream]")
