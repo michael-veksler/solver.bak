@@ -18,13 +18,13 @@ TEST_CASE("stream ws", "[stream]")
     is >> std::ws;
 }   
 
-TEST_CASE("stream get", "[stream]")
+TEST_CASE("stream get ch", "[stream]")
 {
     std::istringstream is{"foo bar"};
     REQUIRE(is.get() == 'f');
 }   
 
-TEST_CASE("stream get", "[stream]")
+TEST_CASE("stream get buf", "[stream]")
 {
     std::istringstream is{"foo bar"};
     static constexpr std::string_view foo = "foo";
