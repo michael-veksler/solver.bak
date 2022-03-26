@@ -51,28 +51,7 @@ struct propagation_operation
     propagation_result_t result;
 };
 
-TEST_CASE("istring stream set", "[istream]")
-{
-    std::istringstream is{"p cnf 5 3"};
-}
 
-TEST_CASE("istring stream status", "[istream]")
-{
-    std::istringstream is{"p cnf 5 3"};
-    REQUIRE(!!is);
-}
-
-TEST_CASE("istring stream eof", "[istream]")
-{
-    std::istringstream is{"p cnf 5 3"};
-    REQUIRE(!is.eof());
-}
-
-TEST_CASE("istring stream bad", "[istream]")
-{
-    std::istringstream is{"p cnf 5 3"};
-    REQUIRE(!is.bad());
-}
 
 TEST_CASE("istring stream read str", "[istream]")
 {
@@ -88,23 +67,14 @@ TEST_CASE("istring stream read space str", "[istream]")
     std::string str;
     is >> str;
     REQUIRE(str == "p");
-    REQUIRE(!!is);
 }
 
-TEST_CASE("istring stream read space str str int", "[istream]")
+TEST_CASE("istring stream read space int", "[istream]")
 {
-    std::istringstream is{"   p cnf 5 3"};
-    std::string str;
-    is >> str;
-    REQUIRE(str == "p");
-    REQUIRE(!!is);
-    is >> str;
-    REQUIRE(str == "cnf");
-    REQUIRE(!!is);
+    std::istringstream is{"   5 3"};
     int n=0;
     is >> n;
     REQUIRE(n == 5);
-    REQUIRE(!!is);
 }
 
 TEST_CASE("propagate", "[binary_clause]")
