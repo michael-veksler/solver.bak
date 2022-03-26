@@ -21,7 +21,9 @@ TEST_CASE("stream ws", "[stream]")
 TEST_CASE("stream get ch", "[stream]")
 {
     std::istringstream is{"foo bar"};
-    REQUIRE(is.get() == 'f');
+    char ch = '\0';
+    is.get(ch);
+    REQUIRE(ch == 'f');
 }   
 
 TEST_CASE("stream get buf", "[stream]")
