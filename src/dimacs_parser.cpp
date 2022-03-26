@@ -27,7 +27,16 @@ void parse_dimacs_header(std::istream &in,
         static constexpr std::string_view expected_format = "cnf ";
         std::array<char, std::size(expected_format) + 1> format={0};
         char cmd = '\0';
-        str.get(cmd) >> std::ws;
+        str.get(cmd);
+        for (char ch ='\0'; str.get(ch); )
+        {
+            if (ch != ' ' && ch != '\t')
+            {
+                str.unget();
+                break;
+            }
+        }
+
         str.get(format.data(), format.size());
 
         if (!str || cmd != 'p' || format.data() != std::string(expected_format) ) {

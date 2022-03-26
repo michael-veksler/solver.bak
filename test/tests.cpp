@@ -12,16 +12,29 @@
 using namespace solver::test;
 using solver::propagation_result_t;
 
-TEST_CASE("stream ws", "[stream]")
-{
-    std::istringstream is{" foo bar"};
-    is >> std::ws;
-}   
-
 TEST_CASE("stream get ch", "[stream]")
 {
     std::istringstream is{"foo bar"};
     char ch = '\0';
+    is.get(ch);
+    REQUIRE(ch == 'f');
+}   
+
+TEST_CASE("stream unget", "[stream]")
+{
+    std::istringstream is{"foo bar"};
+    char ch = '\0';
+    is.get(ch);
+    is.unget();
+    REQUIRE(ch == 'f');
+}   
+
+TEST_CASE("stream unget get", "[stream]")
+{
+    std::istringstream is{"foo bar"};
+    char ch = '\0';
+    is.get(ch);
+    is.unget();
     is.get(ch);
     REQUIRE(ch == 'f');
 }   
