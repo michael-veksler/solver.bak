@@ -1,22 +1,26 @@
 #include <fmt/format.h>
-#include <iterator>
-#include <utility>
+#include <vector>
+#include <string>
+#include <sstream>
+#include "../src/dimacs_parser.hpp"
 
-[[nodiscard]] auto sum_values(const uint8_t *Data, size_t Size)
-{
-  constexpr auto scale = 1000;
-
-  int value = 0;
-  for (std::size_t offset = 0; offset < Size; ++offset) {
-    value += static_cast<int>(*std::next(Data, static_cast<long>(offset))) * scale;
-  }
-  return value;
-}
 
 // Fuzzer that attempts to invoke undefined behavior for signed integer overflow
 // cppcheck-suppress unusedFunction symbolName=LLVMFuzzerTestOneInput
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
-  fmt::print("Value sum: {}, len{}\n", sum_values(Data, Size), Size);
+  std::string str(reinterpret_cast<const char*>(data), size);
+  std::istringstream is(str);
+
+  unsigned n_variables = 0;
+  unsigned n_clauses = 0;
+    std::vector<std::vector<int>> clauses;
+  auto construct_problem = [&](unsigned read_vars, unsigned read_clauses) {
+      n_variables = read_vars;
+      n_clauses = read_clauses;
+  };
+  auto register_clause = [&](const std::vector<int> &read_clauses) { clauses.push_back(read_clauses); };
+  solver::parse_dimacs(is, construct_problem, register_clause);
+  fmt::print("n_variables: {}, n_clauses{} size(clauses)\n", n_variables, n_clauses, std::size(clauses));
   return 0;
 }

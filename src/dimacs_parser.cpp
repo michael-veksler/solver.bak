@@ -1,10 +1,10 @@
 #include "dimacs_parser.hpp"
+#include <array>
 #include <cassert>
 #include <fmt/format.h>
 #include <sstream>
 #include <string>
 #include <vector>
-#include <array>
 
 namespace solver {
 
@@ -12,6 +12,35 @@ std::string_view lstrip(std::string_view sv)
 {
     sv.remove_prefix(std::min(sv.find_first_not_of("\t "), sv.size()));
     return sv;
+}
+
+bool is_whitespace(char ch) { return ch == ' ' || ch == '\t' || ch == '\n'; }
+
+// In MSVC with coverage & debug & developer mode `istream >> std::ws` hangs,
+// so I had to implement it myself, to overcome the issue.
+std::istream &skip_whitespace(std::istream &is)
+{
+    for (char ch = '\0'; is.get(ch);) {
+        if (!is_whitespace(ch)) {
+            is.unget();
+
+            break;
+        }
+    }
+    return is;
+}
+
+// In MSVC with coverage & debug & developer mode `istream >> string` hangs,
+// so I had to implement it myself, to overcome the issue.
+std::string get_string(std::istream &is)
+{
+    std::string ret;
+    skip_whitespace(is);
+    for (char ch = '\0'; is.get(ch) && !is_whitespace(ch);) {
+        ret.push_back(ch);
+    }
+
+    return ret;
 }
 
 void parse_dimacs_header(std::istream &in,
@@ -23,31 +52,18 @@ void parse_dimacs_header(std::istream &in,
         if (line_view.empty() || line_view[0] == 'c') {
             continue;
         }
-        std::istringstream str{ std::string(line_view) };
-        static constexpr std::string_view expected_format = "cnf ";
-        std::array<char, std::size(expected_format) + 1> format={0};
-        char cmd = '\0';
-        str.get(cmd);
-        for (char ch ='\0'; str.get(ch); )
-        {
-            if (ch != ' ' && ch != '\t')
-            {
-                str.unget();
-                break;
-            }
-        }
-
-        str.get(format.data(), format.size());
-
-        if (!str || cmd != 'p' || format.data() != std::string(expected_format) ) {
+        std::istringstream is{ std::string(line_view) };
+        std::string cmd = get_string(is);
+        std::string format = get_string(is);
+        if (!is || cmd != "p" || format != "cnf") {
             throw std::runtime_error(fmt::format(
                 "{}: Invalid dimacs input format, expecting a line prefix 'p cnf ' but got '{}'", line_num, line_view));
         }
 
         int variables = 0;
         int clauses = 0;
-        str >> variables >> clauses;
-        if (!str || variables < 0 || clauses < 0) {
+        is >> variables >> clauses;
+        if (!is || variables < 0 || clauses < 0) {
             throw std::runtime_error(
                 fmt::format("{}: Invalid dimacs input format, expecting a header 'p cnf <variables: unsigned int> "
                             "<clauses: unsigned int>' but got '{}'",
@@ -55,11 +71,10 @@ void parse_dimacs_header(std::istream &in,
                     line_view));
         }
 
-        line.clear();
-        str >> line;
-        if (!line.empty()) {
+        std::string tail = get_string(is);
+        if (!tail.empty()) {
             throw std::runtime_error(
-                fmt::format("{}: Invalid dimacs input format, junk after header '{}'", line_num, line));
+                fmt::format("{}: Invalid dimacs input format, junk after header '{}'", line_num, tail));
         }
         construct_problem(static_cast<unsigned>(variables), static_cast<unsigned>(clauses));
         return;
