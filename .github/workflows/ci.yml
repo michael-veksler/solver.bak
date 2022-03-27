@@ -51,6 +51,17 @@ jobs:
             compiler: gcc-11
           - os: ubuntu-20.04
             compiler: llvm-13.0.0
+          #   MSVC in developer mode with debug seems to be broken:
+          #    - Parsing arguments by docopt        crashes
+          #    - std::istringstream >> std::ws      hangs
+          #    - std::istringstream >> std::string  hangs
+          #    - std::istringstream.get()           hangs
+          #    Disable it until it is fixed
+          - os: windows-2022
+            compiler: msvc
+            generator: "Visual Studio 17 2022"
+            build_type: Debug
+            developer_mode: ON
 
         include:
           # Add appropriate variables for gcov version required. This will intentionally break
@@ -65,11 +76,6 @@ jobs:
             developer_mode: OFF
             package_generator: TBZ2
 
-          - os: windows-2022
-            compiler: msvc
-            generator: "Visual Studio 17 2022"
-            build_type: Debug
-            developer_mode: ON
           - os: windows-2022
             compiler: msvc
             generator: "Visual Studio 17 2022"

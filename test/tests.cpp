@@ -227,6 +227,22 @@ TEST_CASE("dimacs junk at header end", "[dimacs_parser]")
         Catch::Matchers::Message("1: Invalid dimacs input format, junk after header '4'"));
 }
 
+TEST_CASE("dimacs n_variables overflow", "[dimacs_parser]")
+{
+    REQUIRE_THROWS_MATCHES(dimacs_parse_case(R"(p cnf 2147483648 3
+                                                1 2 0)"),
+        std::runtime_error,
+        Catch::Matchers::Message("1: Invalid dimacs input format, expecting a header 'p cnf <variables: unsigned int> "
+                                 "<clauses: unsigned int>' but got 'p cnf 2147483648 3'"));
+}
+
+TEST_CASE("dimacs n_variables almost overflow", "[dimacs_parser]")
+{
+    dimacs_parse_case parse_result = dimacs_parse_case(R"(p cnf 2147483647 3
+                                                         1 2 0)");
+    REQUIRE(parse_result.n_variables == 2147483647U);
+}
+
 TEST_CASE("dimacs invalid 0 in clause middle", "[dimacs_parser]")
 {
     REQUIRE_THROWS_MATCHES(dimacs_parse_case(R"(

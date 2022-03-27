@@ -9,6 +9,7 @@ target_link_libraries(
   PRIVATE project_options
           project_warnings
           fmt::fmt
+          solver
           -coverage
           -fsanitize=fuzzer,undefined,address)
 target_compile_options(fuzz_tester PRIVATE -fsanitize=fuzzer,undefined,address)
