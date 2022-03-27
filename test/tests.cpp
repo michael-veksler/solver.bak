@@ -11,43 +11,6 @@
 using namespace solver::test;
 using solver::propagation_result_t;
 
-TEST_CASE("stream get ch", "[stream]")
-{
-    std::istringstream is{ "foo bar" };
-    char ch = '\0';
-    is.get(ch);
-    REQUIRE(ch == 'f');
-}
-
-TEST_CASE("stream unget", "[stream]")
-{
-    std::istringstream is{ "foo bar" };
-    char ch = '\0';
-    is.get(ch);
-    is.unget();
-    REQUIRE(ch == 'f');
-}
-
-TEST_CASE("stream unget get", "[stream]")
-{
-    std::istringstream is{ "foo bar" };
-    char ch = '\0';
-    is.get(ch);
-    is.unget();
-    is.get(ch);
-    REQUIRE(ch == 'f');
-}
-
-TEST_CASE("stream get buf", "[stream]")
-{
-    std::istringstream is{ "foo bar" };
-    static constexpr std::string_view foo = "foo";
-    std::array<char, foo.size() + 1> buf{};
-    is.get(buf.data(), buf.size());
-    REQUIRE(std::string(foo) == std::string(buf.data()));
-}
-
-
 TEST_CASE("is_satisfied", "[binary_clause]")
 {
     const test_constraint_state<> initial_state{ .m_variables = { { false }, { true }, { false }, { true } },
