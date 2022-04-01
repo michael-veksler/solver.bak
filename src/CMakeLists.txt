@@ -13,14 +13,15 @@ target_link_libraries(
 )
 
 # Generic test that uses conan libs
-add_executable(intro main.cpp)
+add_executable(solve main.cpp)
 target_link_libraries(
-  intro
+  solve
   PRIVATE project_options
           project_warnings
           docopt::docopt
           fmt::fmt
+          solver
           spdlog::spdlog)
 
-target_include_directories(intro PRIVATE "${CMAKE_BINARY_DIR}/configured_files/include")
+target_include_directories(solve PRIVATE "${CMAKE_BINARY_DIR}/configured_files/include")
 

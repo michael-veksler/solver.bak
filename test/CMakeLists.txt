@@ -8,18 +8,27 @@ target_link_libraries(catch_main PUBLIC Catch2::Catch2)
 target_link_libraries(catch_main PRIVATE project_options)
 
 # Provide a simple smoke test to make sure that the CLI works and can display a --help message
-add_test(NAME cli.has_help COMMAND intro --help)
+add_test(NAME cli.has_help COMMAND solve --help)
 
 # Provide a test to verify that the version being reported from the application
 # matches the version given to CMake. This will be important once you package
 # your program. Real world shows that this is the kind of simple mistake that is easy
 # to make, but also easy to test for.
-add_test(NAME cli.version_matches COMMAND intro --version)
+add_test(NAME cli.version_matches COMMAND solve --version)
 
 set_tests_properties(cli.version_matches PROPERTIES PASS_REGULAR_EXPRESSION "${PROJECT_VERSION}")
 
-add_test(NAME cli.misc_args COMMAND intro ship new titanic)
-set_tests_properties(cli.misc_args PROPERTIES PASS_REGULAR_EXPRESSION "Hello, from \\{fmt\\}")
+add_test(NAME cli.dimacs_not_found COMMAND solve --exhaustive --dimacs=nonexistent.dimacs
+         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+set_tests_properties(cli.dimacs_not_found PROPERTIES PASS_REGULAR_EXPRESSION "c solving nonexistent.dimacs\nc Could not open file nonexistent.dimacs\ns UNKNOWN")
+
+add_test(NAME cli.trivial_unsat COMMAND solve --exhaustive --dimacs=test_files/trivial_unsat.dimacs
+         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+set_tests_properties(cli.trivial_unsat PROPERTIES PASS_REGULAR_EXPRESSION "s UNSATISFIABLE")
+
+add_test(NAME cli.trivial_sat COMMAND solve --exhaustive --dimacs=test_files/trivial_sat.dimacs
+         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+set_tests_properties(cli.trivial_sat PROPERTIES PASS_REGULAR_EXPRESSION "s SATISFIABLE\nv -1 -2 0")
 
 add_executable(tests tests.cpp)
 target_link_libraries(tests PRIVATE solver project_warnings project_options catch_main)
