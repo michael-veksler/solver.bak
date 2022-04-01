@@ -7,7 +7,6 @@
 #include <cinttypes>
 #include <cstdlib>
 #include <iterator>
-#include <ranges>
 #include <vector>
 
 namespace solver {
@@ -80,8 +79,9 @@ template<constraint_state constraint_state_t> class exhaustive_solver
     bool try_assignments(uint8_t depth)
     {
         if (depth >= m_state.size()) {
-            return std::ranges::all_of(
-                m_clauses, [this](const auto &constraint) { return constraint.is_satisfied(m_state); });
+            return std::all_of(begin(m_clauses), end(m_clauses), [this](const auto &constraint) {
+                return constraint.is_satisfied(m_state);
+            });
         }
 
         state_saver<domain_type> saved_domain = m_state.saved_state(depth);

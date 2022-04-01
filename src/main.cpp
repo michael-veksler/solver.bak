@@ -43,9 +43,8 @@ int main(int argc, const char **argv)
         fmt::print("c solving {}\n", args.at("--dimacs").asString());
         std::ifstream dimacs_stream{ args.at("--dimacs").asString() };
         if (!dimacs_stream) {
-            fmt::print("c Could not open file {}\n",
-                args.at("--dimacs").asString(),
-                std::filesystem::current_path().string());
+            fmt::print(
+                "c Could not open file {}\n", args.at("--dimacs").asString(), std::filesystem::current_path().string());
             fmt::print("s UNKNOWN\n");
             return 1;
         }
@@ -67,10 +66,11 @@ int main(int argc, const char **argv)
             fmt::print("s SATISFIABLE\n");
             fmt::print("v ");
             for (unsigned i = 0; i != solver_ptr->num_variables(); ++i) {
-                if (solver_ptr->get_value(i))
+                if (solver_ptr->get_value(i)) {
                     fmt::print("{} ", i + 1);
-                else
+                } else {
                     fmt::print("-{} ", i + 1);
+                }
             }
             fmt::print("0\n");
         } else {
