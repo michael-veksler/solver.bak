@@ -28,7 +28,7 @@ set_tests_properties(cli.trivial_unsat PROPERTIES PASS_REGULAR_EXPRESSION "s UNS
 
 add_test(NAME cli.trivial_sat COMMAND solve --exhaustive --dimacs=test_files/trivial_sat.dimacs
          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-set_tests_properties(cli.trivial_sat PROPERTIES PASS_REGULAR_EXPRESSION "s SATISFIABLE\nv -1 -2 0")
+set_tests_properties(cli.trivial_sat PROPERTIES PASS_REGULAR_EXPRESSION "s SATISFIABLE\nv 1 -2 0")
 
 add_executable(tests tests.cpp)
 target_link_libraries(tests PRIVATE solver project_warnings project_options catch_main)

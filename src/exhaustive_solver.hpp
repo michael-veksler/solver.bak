@@ -2,7 +2,6 @@
 
 #include "binary_clause.hpp"
 #include "constraint.hpp"
-#include "utilities.hpp"
 #include <algorithm>
 #include <cinttypes>
 #include <cstdlib>
@@ -34,10 +33,6 @@ template<typename Domain, std::integral VariableIndexType> class uniform_constra
     {
         m_variables[param.variable_index].clear();
         m_variables[param.variable_index].insert(value);
-    }
-    state_saver<domain_type> saved_state(unsigned variable)
-    {
-        return state_saver<domain_type>{ m_variables[variable] };
     }
     size_t size() const { return m_variables.size(); }
 
@@ -84,17 +79,18 @@ template<constraint_state constraint_state_t> class exhaustive_solver
             });
         }
 
-        state_saver<domain_type> saved_domain = m_state.saved_state(depth);
-        for (value_type val : saved_domain.saved_state()) {
+        domain_type saved_domain = m_state.get_domain(parameter_t{ depth });
+        for (value_type val : saved_domain) {
             m_state.set_value(parameter_t{ depth }, val);
             if (try_assignments(depth + 1)) {
                 return true;
             }
         }
+        m_state.set_domain(parameter_t{ depth }, saved_domain);
         return false;
     }
 
-    uniform_constraint_state<domain_type, std::uint8_t> m_state;
+    constraint_state_t m_state;
     std::vector<binary_clause<constraint_state_t>> m_clauses;
 };
 }// namespace solver
