@@ -151,7 +151,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: test-logs
+          name: test-logs-${{matrix.os}}-${{matrix.compiler}}-${{matrix.build_type}}-${{matrix.developer_mode}}
           path: |
             **/Testing/**/*.log
 
