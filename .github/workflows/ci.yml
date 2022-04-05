@@ -147,6 +147,12 @@ jobs:
         run: |
           ctest -C ${{matrix.build_type}}
           gcovr -j ${{env.nproc}} --delete --root ../ --print-summary --xml-pretty --xml coverage.xml . --gcov-executable '${{ matrix.gcov_executable }}'
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-logs
+          path: |
+            **/Testing/**/*.log
 
       - name: Windows - Test and coverage
         if: runner.os == 'Windows'
