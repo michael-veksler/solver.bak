@@ -56,7 +56,14 @@ int main(int argc, const char **argv)
             std::ignore = constraints;
             solver_ptr = std::make_unique<solver_t>(variables, unset);
         };
-        auto add_clause = [&](const std::vector<int> &literals) { solver_ptr->add_clause(literals); };
+        auto add_clause = [&](const std::vector<int> &literals) { 
+            // experiment
+            fmt::print("calling add_clause(), &literals={}, literals.data={}\n", static_cast<const void*>(& literals), static_cast<const void*>(literals.data()));
+            fmt::print("calling add_clause({})\n", fmt::join(literals, ", ")); 
+    
+            solver_ptr->add_clause(literals); 
+            
+            };
         solver::parse_dimacs(dimacs_stream, constructor, add_clause);
         if (!solver_ptr) {
             fmt::print("s UNKNOWN\n");

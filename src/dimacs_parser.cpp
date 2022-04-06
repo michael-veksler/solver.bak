@@ -91,6 +91,9 @@ void parse_dimacs(std::istream &in,
             }
             literals.push_back(literal);
         }
+        fmt::print("calling register_clause(), &literals={}, literals.data={}\n", static_cast<void*>(& literals), static_cast<void*>(literals.data()));
+        fmt::print("calling register_clause({})\n", fmt::join(literals, ", ")); 
+    
         register_clause(literals);
     }
 }

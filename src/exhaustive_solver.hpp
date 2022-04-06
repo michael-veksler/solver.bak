@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <iterator>
 #include <vector>
+#include <fmt/format.h>
 
 namespace solver {
 
@@ -53,6 +54,9 @@ template<constraint_state constraint_state_t> class exhaustive_solver
 
     void add_clause(const std::vector<int> &literals)
     {
+        fmt::print("in add_clause(), &literals={}, literals.data={}\n", static_cast<const void*>(& literals), static_cast<const void*>(literals.data()));
+        fmt::print("in add_clause({})\n", fmt::join(literals, ", ")); 
+
         std::vector<parameter_t> parameters;
         parameters.reserve(literals.size());
 
