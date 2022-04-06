@@ -7,7 +7,6 @@
 #include <cstdlib>
 #include <iterator>
 #include <vector>
-#include <fmt/format.h>
 
 namespace solver {
 
@@ -54,23 +53,8 @@ template<constraint_state constraint_state_t> class exhaustive_solver
 
     void add_clause(const std::vector<int> &literals)
     {
-        fmt::print("in add_clause(), &literals={}, literals.data={}\n", static_cast<const void*>(& literals), static_cast<const void*>(literals.data()));
-        fmt::print("in add_clause({})\n", fmt::join(literals, ", ")); 
-
         std::vector<parameter_t> parameters;
         parameters.reserve(literals.size());
-
-        // experiment start 
-        std::vector<bool> positive_literals;
-        positive_literals.reserve(literals.size());
-
-
-        for (int literal: literals)
-        {
-            parameters.push_back(parameter_t{ static_cast<value_type>(std::abs(literal) - 1) });
-            positive_literals.push_back(literal > 0);
-        }
-        /*
         std::transform(literals.begin(), literals.end(), std::back_inserter(parameters), [](int literal) {
             return parameter_t{ static_cast<value_type>(std::abs(literal) - 1) };
         });
@@ -80,8 +64,6 @@ template<constraint_state constraint_state_t> class exhaustive_solver
         std::transform(literals.begin(), literals.end(), std::back_inserter(positive_literals), [](int literal) {
             return literal > 0;
         });
-        */
-       // experiment end
 
         m_clauses.emplace_back(binary_clause<constraint_state_t>(parameters, positive_literals));
     }

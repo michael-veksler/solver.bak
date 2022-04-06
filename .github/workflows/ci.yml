@@ -153,8 +153,7 @@ jobs:
         with:
           name: test-logs-${{matrix.os}}-${{matrix.compiler}}-${{matrix.build_type}}-${{matrix.developer_mode}}
           path: |
-            **/*.log   
-          # **/Testing/**/*.log
+            **/Testing/**
 
       - name: Windows - Test and coverage
         if: runner.os == 'Windows'

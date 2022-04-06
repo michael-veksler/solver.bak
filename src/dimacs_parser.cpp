@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <cstdio>
 
 namespace solver {
 
@@ -62,7 +63,6 @@ void parse_dimacs(std::istream &in,
     unsigned line_num = 1;
     parse_dimacs_header(in, line_num, construct_problem);
     std::string line;
-    std::vector<int> literals;
     for (++line_num; std::getline(in, line); ++line_num) {
         std::string_view line_view = lstrip(line);
         if (line_view.empty() || line_view[0] == 'c') {
@@ -70,7 +70,7 @@ void parse_dimacs(std::istream &in,
         }
 
         std::istringstream str{ std::string(line_view) };
-        literals.clear();
+        std::vector<int> literals;
         bool found_zero = false;
         while (true) {
             int literal = 0;
@@ -92,6 +92,7 @@ void parse_dimacs(std::istream &in,
             literals.push_back(literal);
         }
         fmt::print("calling register_clause(), &literals={}, literals.data={}\n", static_cast<void*>(& literals), static_cast<void*>(literals.data()));
+        fflush(stdout);
         fmt::print("calling register_clause({})\n", fmt::join(literals, ", ")); 
     
         register_clause(literals);
