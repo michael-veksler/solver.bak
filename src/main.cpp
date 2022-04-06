@@ -77,6 +77,7 @@ int main(int argc, const char **argv)
             fmt::print("s UNSATISFIABLE\n");
         }
     } catch (const std::exception &e) {
-        fmt::print("Unhandled exception in main: {}\n", e.what());
+        fmt::print("c Unhandled exception in main: {}\n", e.what());
+        fmt::print("s UNKNOWN\n");
     }
 }

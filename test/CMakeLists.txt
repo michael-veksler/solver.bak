@@ -26,6 +26,11 @@ add_test(NAME cli.trivial_unsat COMMAND solve --exhaustive --dimacs=test_files/t
          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 set_tests_properties(cli.trivial_unsat PROPERTIES PASS_REGULAR_EXPRESSION "s UNSATISFIABLE")
 
+add_test(NAME cli.empty COMMAND solve --exhaustive --dimacs=/dev/null
+         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+set_tests_properties(cli.empty PROPERTIES PASS_REGULAR_EXPRESSION
+                     "c Unhandled exception in main: Invalid dimacs input format - all lines are either empty or commented out\ns UNKNOWN")
+
 add_test(NAME cli.trivial_sat COMMAND solve --exhaustive --dimacs=test_files/trivial_sat.dimacs
          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 set_tests_properties(cli.trivial_sat PROPERTIES PASS_REGULAR_EXPRESSION "s SATISFIABLE\nv 1 -2 0")
