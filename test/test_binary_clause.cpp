@@ -81,8 +81,8 @@ TEST_CASE("propagate", "[binary_clause]")
         for (const propagation_operation &operation : sequence) {
             state.m_variables = operation.variables;
             state.m_variables = operation.variables;
-            REQUIRE(clause.propagate(state, op.trigger_param) == op.result);
-            REQUIRE(state.m_watches == op.expect_watches);
+            REQUIRE(clause.propagate(state, operation.trigger_param) == operation.result);
+            REQUIRE(state.m_watches == operation.expect_watches);
         }
     };
     solver::binary_clause<test_constraint_state<>> strict_clause{ { 0, 1, 2, 3 }, { true, false, true, false } };
