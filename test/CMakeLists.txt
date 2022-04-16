@@ -35,7 +35,7 @@ add_test(NAME cli.trivial_sat COMMAND solve --exhaustive --dimacs=test_files/tri
          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 set_tests_properties(cli.trivial_sat PROPERTIES PASS_REGULAR_EXPRESSION "s SATISFIABLE\nv 1 -2 0")
 
-add_executable(tests tests.cpp)
+add_executable(tests tests.cpp test_binary_clause.cpp)
 target_link_libraries(tests PRIVATE solver project_warnings project_options catch_main)
 
 # automatically discover tests that are defined in catch based test files you can modify the unittests. Set TEST_PREFIX
