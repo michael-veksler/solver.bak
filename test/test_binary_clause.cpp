@@ -78,9 +78,9 @@ TEST_CASE("propagate", "[binary_clause]")
             .result = propagation_result_t::SAT } };
     auto run_test = [&](auto clause) {
         typename decltype(clause)::state_t state;
-        for (const propagation_operation &op : sequence) {
-            state.m_variables = op.variables;
-            state.m_variables = op.variables;
+        for (const propagation_operation &operation : sequence) {
+            state.m_variables = operation.variables;
+            state.m_variables = operation.variables;
             REQUIRE(clause.propagate(state, op.trigger_param) == op.result);
             REQUIRE(state.m_watches == op.expect_watches);
         }
