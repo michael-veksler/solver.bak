@@ -9,34 +9,34 @@
 
 namespace solver {
 
-std::string_view lstrip(std::string_view sv)
+std::string_view lstrip(std::string_view view)
 {
-    sv.remove_prefix(std::min(sv.find_first_not_of("\t "), sv.size()));
-    return sv;
+    view.remove_prefix(std::min(view.find_first_not_of("\t "), view.size()));
+    return view;
 }
 
-void parse_dimacs_header(std::istream &in,
+void parse_dimacs_header(std::istream &in_stream,
     unsigned &line_num,
     const std::function<void(unsigned, unsigned)> &construct_problem)
 {
-    for (std::string line; std::getline(in, line); ++line_num) {
+    for (std::string line; std::getline(in_stream, line); ++line_num) {
         std::string_view line_view = lstrip(line);
         if (line_view.empty() || line_view[0] == 'c') {
             continue;
         }
-        std::istringstream is{ std::string(line_view) };
+        std::istringstream line_stream{ std::string(line_view) };
         std::string cmd;
         std::string format;
-        is >> cmd >> format;
-        if (!is || cmd != "p" || format != "cnf") {
+        line_stream >> cmd >> format;
+        if (!line_stream || cmd != "p" || format != "cnf") {
             throw std::runtime_error(fmt::format(
                 "{}: Invalid dimacs input format, expecting a line prefix 'p cnf ' but got '{}'", line_num, line_view));
         }
 
         int variables = 0;
         int clauses = 0;
-        is >> variables >> clauses;
-        if (!is || variables < 0 || clauses < 0) {
+        line_stream >> variables >> clauses;
+        if (!line_stream || variables < 0 || clauses < 0) {
             throw std::runtime_error(
                 fmt::format("{}: Invalid dimacs input format, expecting a header 'p cnf <variables: unsigned int> "
                             "<clauses: unsigned int>' but got '{}'",
@@ -45,7 +45,7 @@ void parse_dimacs_header(std::istream &in,
         }
 
         std::string tail;
-        is >> tail;
+        line_stream >> tail;
         if (!tail.empty()) {
             throw std::runtime_error(
                 fmt::format("{}: Invalid dimacs input format, junk after header '{}'", line_num, tail));
@@ -56,14 +56,14 @@ void parse_dimacs_header(std::istream &in,
     throw std::runtime_error("Invalid dimacs input format - all lines are either empty or commented out");
 }
 
-void parse_dimacs(std::istream &in,
+void parse_dimacs(std::istream &in_stream,
     const std::function<void(unsigned, unsigned)> &construct_problem,
     const std::function<void(const std::vector<int> &)> &register_clause)
 {
     unsigned line_num = 1;
-    parse_dimacs_header(in, line_num, construct_problem);
+    parse_dimacs_header(in_stream, line_num, construct_problem);
     std::string line;
-    for (++line_num; std::getline(in, line); ++line_num) {
+    for (++line_num; std::getline(in_stream, line); ++line_num) {
         std::string_view line_view = lstrip(line);
         if (line_view.empty() || line_view[0] == 'c') {
             continue;
